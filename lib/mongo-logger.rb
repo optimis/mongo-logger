@@ -5,6 +5,7 @@ require 'config/mongologger_config'
 
 
 require 'mongo-logger/connection'
+require 'mongo-logger/logger'
 
 require 'mongo'
 require 'logger'
@@ -21,10 +22,5 @@ end
 module MongoLogger
   def self.logger
     @logger ||= Logger.new('log/mongologger_log.log')
-  end
-
-
-  def self.mongo_collection
-    @collection ||= MongoLogger::Connection.connect
   end
 end
