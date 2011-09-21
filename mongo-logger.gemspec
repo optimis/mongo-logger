@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'SystemTimer'
 
   s.add_development_dependency 'rspec'
+  s.add_development_dependency 'rake'
   s.add_development_dependency 'timecop'
 
   s.files         = `git ls-files`.split("\n")

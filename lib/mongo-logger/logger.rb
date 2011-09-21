@@ -14,19 +14,6 @@ module MongoLogger
       end
     end
 
-    # def debug(message, attributes={})
-    #   add(:debug, message, attributes)
-    # end
-
-    # def info(message, attributes={})
-    #   add(:info, message, attributes)
-    # end
-
-    # def warn(message, attributes={})
-    #   add(:warn, message, attributes)
-    # end
-
-
     def initialize
       @collection = MongoLogger::Connection.connect
     end
