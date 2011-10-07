@@ -82,6 +82,18 @@ describe MongoLogger::Logger do
       @collection.find('level' => 'error').first['attributes'].should == {'application' => 'app one', 'workflow' => 'ETL'}
     end
 
+    it 'should truncate attributes that are over 3000 characters long' do
+      subject.add :error, "message", 'application' => 'w' * 3040
+        
+      @collection.find('level' => 'error').first['attributes']['application'].should have(3003).characters
+    end
+
+    it 'should truncate the attributes if they are in a sub hash and over 3000 characters long' do
+      subject.add :error, "message", 'application' => {'data' => 'w' * 3040}
+        
+      @collection.find('level' => 'error').first['attributes']['application']['data'].should have(3003).characters
+    end
+
     it 'should not log the message if the log level is below the configured level' do
       subject.add :debug, "My Message"
 
