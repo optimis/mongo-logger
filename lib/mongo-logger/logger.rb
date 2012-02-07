@@ -20,7 +20,6 @@ module MongoLogger
     
     def add(level, message, attributes={})
       truncate_attributes! attributes
-
       @collection.insert(:level => level.to_s, :message => message, :logged_at => Time.now, :attributes => attributes) if log_for_level?(level)
     end 
 
