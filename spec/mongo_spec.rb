@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe MongoLogger::Connection do
-
   after do
     MongoLogger::Connection.connect.remove if MongoLogger::Connection.connect.respond_to? :remove
   end
@@ -21,6 +20,38 @@ describe MongoLogger::Connection do
 
     it 'should create the capped collection if it does not exist' do
       subject.stats['capped'].should == 1
+    end
+
+    context 'stubbed' do
+      before :each do
+        module MongoLogger
+          module Config
+            def self.stubbed?
+              true
+            end
+          end
+        end
+      end
+      after :each do
+        module MongoLogger
+          module Config
+            # remove_method :stubbed?
+          end
+        end
+      end
+      it 'should not connect to mongo' do
+        Mongo::Connection.should_not_receive :new
+
+        subject
+      end
+
+      it 'should return an object that responds to insert with any number of actions' do
+        lambda do
+          subject.insert
+          subject.insert "adsf"
+          subject.insert "asdf", {:asdf => "afd"}
+        end.should_not raise_error
+      end
     end
   end
 end

@@ -107,5 +107,23 @@ describe MongoLogger::Logger do
       @collection.size.should == 2
     end
 
+    context 'stubbed' do
+      before :each do
+        module MongoLogger
+          module Config
+            def self.stubbed?
+              true
+            end
+          end
+        end
+      end
+      it 'should be able to add a message when the connection is stubbed' do
+        lambda do
+          logger = MongoLogger::Logger.new
+          logger.add :error, "adsf", {}       
+        end.should_not raise_error
+      end
+    end
+
   end
 end
