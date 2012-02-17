@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe MongoLogger::Logger do
   before do
+    MongoLogger::Config.stub!(:buffer_count).and_return(0)
     Timecop.freeze
     @collection = MongoLogger::Connection.connect
   end
@@ -105,6 +106,27 @@ describe MongoLogger::Logger do
       subject.add :error, "big error"
 
       @collection.size.should == 2
+    end
+    
+    context 'buffer' do
+      before do
+        @collection.drop
+        MongoLogger::Config.stub!(:buffer_count).and_return(10) 
+        @logger = subject
+      end
+
+      it 'should write all messages to mongo when the buffer limit is reached' do
+        @logger.instance_variable_get(:"@collection").should_receive(:insert).once
+        10.times {|n| @logger.add :error, n.to_s }
+      end
+
+      it 'should write each item individually to mongo' do
+        10.times {|n| @logger.add :error, n.to_s + "a" }
+
+        sleep 1
+
+        @collection.size.should == 10
+      end
     end
 
     context 'stubbed' do

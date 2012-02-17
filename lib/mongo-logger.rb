@@ -16,6 +16,9 @@ module MongoLogger
     def self.collection_name
       'log_statements'
     end
+    def self.buffer_count
+      500
+    end
   end
 end
 

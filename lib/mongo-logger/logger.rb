@@ -16,11 +16,17 @@ module MongoLogger
 
     def initialize
       @collection = MongoLogger::Connection.connect
+      @buffer = []
     end
     
     def add(level, message, attributes={})
       truncate_attributes! attributes
-      @collection.insert(:level => level.to_s, :message => message, :logged_at => Time.now, :attributes => attributes) if log_for_level?(level)
+      @buffer << {:level => level.to_s, :message => message, :logged_at => Time.now, :attributes => attributes} if log_for_level?(level)
+
+      if @buffer.size >= MongoLogger::Config.buffer_count
+        @collection.insert(@buffer)
+        @buffer = []
+      end
     end 
 
     private
