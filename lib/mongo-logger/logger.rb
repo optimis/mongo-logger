@@ -1,5 +1,15 @@
+require 'singleton'
+
 module MongoLogger
   class Logger
+    include Singleton
+ 
+    # make sure all buffered logs messages are written before exit
+    at_exit do
+      puts 'flush logger before exit'
+      Logger.instance.flush
+    end
+
     Levels = {
         :debug => 0,
         :info => 1,
@@ -23,11 +33,13 @@ module MongoLogger
       truncate_attributes! attributes
       @buffer << {:level => level.to_s, :message => message, :logged_at => Time.now, :attributes => attributes} if log_for_level?(level)
 
-      if @buffer.size >= MongoLogger::Config.buffer_count
-        @collection.insert(@buffer)
-        @buffer = []
-      end
+      flush if @buffer.size >= MongoLogger::Config.buffer_count
     end 
+
+    def flush
+      @collection.insert(@buffer)
+      @buffer = []
+    end
 
     private
 

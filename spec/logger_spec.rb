@@ -11,7 +11,7 @@ describe MongoLogger::Logger do
     Timecop.return
     @collection.drop
   end
-  subject { MongoLogger::Logger.new }
+  subject { MongoLogger::Logger.instance }
 
   describe '#debug' do
     it 'should log the statement in mongo' do
@@ -141,7 +141,7 @@ describe MongoLogger::Logger do
       end
       it 'should be able to add a message when the connection is stubbed' do
         lambda do
-          logger = MongoLogger::Logger.new
+          logger = MongoLogger::Logger.instance
           logger.add :error, "adsf", {}       
         end.should_not raise_error
       end
